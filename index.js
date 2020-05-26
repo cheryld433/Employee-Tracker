@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
 
   // Your password
   password: "Dixiedog1",
-  database: ""
+  database: "employeeDB"
 });
 
 connection.connect(function(err) {
@@ -75,7 +75,7 @@ function runSearch(){
                 viewManager();
                 break;
             case "Delete Department":
-                deleteManager();
+                deleteDepart();
                 break;
             case "Delete Role":
                 deleteRole();
@@ -97,14 +97,93 @@ function runSearch(){
 
 
 // Add departments, roles, and employees:
+ function addEmployee(){
+     inquirer
+     .prompt([
+         {
+             name: "employeeId",
+             type: "input",
+             message: "Enter Employee id number:"
+         },
+         {
+             name: "firstName",
+             type: " input",
+             message: "Enter employee first name:"
+         },
+         {
+             name: "lastName",
+             type: 'input',
+             message: "Enter employee last name:"
+         },
+         {
+             name: "role_id",
+             type: "input",
+             message: "Enter employee role id number:"
+         },
+         {
+             name: "manager_id",
+             type: "input",
+             message: "Enter Employee manager id number:"
+         }
+     ])
+     .then (function(answer){
+         connection.query("INSERT INTO employee (id, first_name, last_name, role_id, manager_id VALUES (?, ?, ?, ?, ?)",
+         [answer.role_id, answer.firstName, answer.lastName, answer.role_id, answer.manager_id], function (err, res){
+             if(err) throw err;
+             console.log(res);
+             runSearch();
+         });
+         
+     });
+
+ }
+
+ function addDepart(){
+
+ }
+
+ function addRole(){
+
+ }
 
 // View departments, roles, and employees:
+function viewDept(){
+
+}
+function viewRole(){
+
+}
+
+function viewEmployee(){
+
+}
 
 // Update employee roles:
+function updateEmployeeRole(){
 
+}
 // BONUS....
 // Update  Employee managers:
+function updateEMployeeManager(){
+
+}
 // View employees by manager:
+function viewManager(){
+
+}
 // Delete departments, roles, and employees:
+function deleteDepart(){
+
+}
+
+function deleteRole(){
+
+}
+function deleteEmployee(){
+
+}
 // View the total utilized budget of a department( combined salaries of all employees in the department)
+function departmentBudget(){
+
+}
 
