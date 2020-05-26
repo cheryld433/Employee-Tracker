@@ -29,12 +29,12 @@ function runSearch(){
         type: "list",
         message: "What would you like to do?",
         choices: [
-            "Add Employee",
-            "Add Department",
-            "Add Role",
+            "View Employee",
             "View Department",
             "View Role",
-            "View Employee",
+            "Add Department",
+            "Add Role",
+            "Add Employee",
             "Update Employee Role",
             "Update Employee Manager",
             "View Employee by Manager",
@@ -51,17 +51,17 @@ function runSearch(){
             case "View Employee":
                 viewEmployee();
                 break;
-            case "Add Department":
-                addDepart();
-                break;
-            case "Add Role":
-                addRole();
-                break;
             case "View Department":
-                viewDept();
+                viewDepart();
                 break;
             case "View Role":
                 viewRole();
+                break;
+            case "Add Department":
+                addDept();
+                break;
+            case "Add Role":
+                addRole();
                 break;
             case "Add Employee":
                 addEmployee();
