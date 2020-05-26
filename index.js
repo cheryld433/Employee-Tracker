@@ -28,31 +28,75 @@ function runSearch(){
         type: "list",
         message: "What would you like to do?",
         choices: [
-            "Add Employee:",
-            "Add Department:",
-            "Add Role:",
-            "View Department:",
-            "View Roles:",
-            "View Employee:",
-            "Update Employee Role:",
-            "Update Employee Manager:",
-            "View Employee by Manager:",
-            "Delete Employee:",
-            "Delete Department:",
-            "Delete Role:",
-            "View Department Budget:",
+            "Add Employee",
+            "Add Department",
+            "Add Role",
+            "View Department",
+            "View Role",
+            "View Employee",
+            "Update Employee Role",
+            "Update Employee Manager",
+            "View Employee by Manager",
+            "Delete Employee",
+            "Delete Department",
+            "Delete Role",
+            "View Department Budget",
             "Exit"
         ]
     })
     .then(function(answer){
-        
+        console.log(answer.action);
+        switch(answer.action){
+            case "Add Employee":
+                addEmployee();
+                break;
+            case "Add Department":
+                addDepart();
+                break;
+            case "Add Role":
+                addRole();
+                break;
+            case "View Department":
+                viewDept();
+                break;
+            case "View Role":
+                viewRole();
+                break;
+            case "View Employee":
+                viewEmployee();
+                break;
+            case "Update Employee Role":
+                updateEmployeeRole();
+                break;
+            case "Update Employee Manager":
+                updateEMployeeManager();
+                break;
+            case "View Employee by Manager":
+                viewManager();
+                break;
+            case "Delete Department":
+                deleteManager();
+                break;
+            case "Delete Role":
+                deleteRole();
+                break;
+            case "Delete Employee":
+                deleteEmployee();
+                break;
+            case "View Department Budget":
+                departmentBudget();
+                break;
+            case "Exit":
+                connection.end();
+                break;
+        }
     })
 
 }
 
-// Switch statement:
 
-//Add departments, roles, and employees:
+
+// Add departments, roles, and employees:
 
 // View departments, roles, and employees:
 
