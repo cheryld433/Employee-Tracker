@@ -18,6 +18,7 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
+  console.log("connected as id" + connection.threadId)
   runSearch();
 });
 
@@ -45,10 +46,10 @@ function runSearch(){
         ]
     })
     .then(function(answer){
-        console.log(answer.action);
+        console.log(" You entered:" + answer.action);
         switch(answer.action){
-            case "Add Employee":
-                addEmployee();
+            case "View Employee":
+                viewEmployee();
                 break;
             case "Add Department":
                 addDepart();
@@ -62,8 +63,8 @@ function runSearch(){
             case "View Role":
                 viewRole();
                 break;
-            case "View Employee":
-                viewEmployee();
+            case "Add Employee":
+                addEmployee();
                 break;
             case "Update Employee Role":
                 updateEmployeeRole();
@@ -89,12 +90,42 @@ function runSearch(){
             case "Exit":
                 connection.end();
                 break;
+                default:
         }
     })
 
 }
 
+// View departments, roles, and employees:
+function viewEmployee(){
+   let query = "SELECT * FROM employee";
+   connection.query(query, function(err, res){
+       if (err) throw err;
+       console.table(res);
+       runSearch();
+   });
+   
+}
 
+function viewDept(){
+    let query = "SELECT * FROM department";
+    connection.query(query, function(err, res){
+        if(err) throw err;
+        console.table(res);
+        runSearch();
+    });
+    
+}
+
+
+function viewRole(){
+    let query = "SELECT * FROM role";
+    connection.query(query,function(err, res){
+        if(err) throw err;
+        console.table(res);
+        runSearch();
+    })
+}
 
 // Add departments, roles, and employees:
 function addEmployee() {
@@ -180,4 +211,3 @@ function deleteEmployee(){
 function departmentBudget(){
 
 }
-
