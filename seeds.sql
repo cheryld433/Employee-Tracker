@@ -1,6 +1,6 @@
 use employeeDB;
 
-INSERT INTO department ( id, name)
+INSERT INTO department (id, name)
 VALUES 
 (1, "Sales"),
 (2, "Engineering"), 

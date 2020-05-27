@@ -1,19 +1,11 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
-const promisemyseql = require("promise-mysql");
-;
 
 const connection = mysql.createConnection({
   host: "localhost",
-
-  // Your port; if not 3306
   port: 3306,
-
-  // Your username
   user: "root",
-
-  // Your password
   password: "Dixiedog1",
   database: "employeeDB"
 });
@@ -21,19 +13,19 @@ const connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id" + connection.threadId)
-  runSearch();
+  mainMenu();
 });
 
-function runSearch(){
+function mainMenu(){
     inquirer
     .prompt({
         name: "action",
         type: "list",
         message: "What would you like to do?",
         choices: [
-            "View Employee",
-            "View Employee by Department",
-            "View Role",
+            "View all Employees",
+            "View all Employees by Department",
+            "View all Employees by Role",
             "Add Department",
             "Add Role",
             "Add Employee",
@@ -50,13 +42,13 @@ function runSearch(){
     .then(function(answer){
         console.log(" You entered:" + answer.action);
         switch(answer.action){
-            case "View Employee":
-                viewEmployee();
+            case "View all Employees":
+                viewEmployees();
                 break;
-            case "View Employee by Department":
+            case "View all Employees by Department":
                 viewDepart();
                 break;
-            case "View Role":
+            case "View all Employees by Role":
                 viewRole();
                 break;
             case "Add Department":
@@ -93,35 +85,45 @@ function runSearch(){
                 connection.end();
                 break;
                 default:
+                    quit();
         }
-    })
+    });
 
 }
 
 // View departments, roles, and employees:
-function viewEmployee() {
-    let query = "SELECT "
-}
-    
-
-function viewDepart(){
+function viewDepart() {
+    // select from the db
     let query = "SELECT * FROM department";
-    connection.query(query, function(err, res){
-        if(err) throw err;
-        console.table(res);
-        runSearch();
+    connection.query(query, function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
     });
-    
-}
-
-function viewRole(){
+    // show the result to the user (console.table)
+  }
+  
+  function viewRole() {
+    // select from the db
     let query = "SELECT * FROM role";
-    connection.query(query,function(err, res){
-        if(err) throw err;
-        console.table(res);
-        runSearch();
-    })
-}
+    connection.query(query, function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    });
+    // show the result to the user (console.table)
+  }
+  
+  function viewEmployees() {
+    // select from the db
+    let query = "SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, concat(m.first_name, ' ' ,  m.last_name) AS manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY ID ASC";
+    connection.query(query, function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    });
+    // show the result to the user (console.table)
+  }
 
 // Add departments, roles, and employees:
 function addEmployee() {
@@ -152,41 +154,42 @@ function addEmployee() {
         connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [answer.eeFirstName, answer.eeLastName, answer.roleID, answer.managerID], function(err, res) {
           if (err) throw err;
           console.log(res);
-          runSearch();
+          mainMenu();
         });
       });
   }
 
 
-// Update employee roles:
-function updateEmployeeRole(){
+// // Update employee roles:
+// function updateEmployeeRole(){
 
-}
-// BONUS....
-// Update  Employee managers:
-function updateEMployeeManager(){
+// }
+// // BONUS....
+// // Update  Employee managers:
+// function updateEMployeeManager(){
 
-}
-// View employees by manager:
-function viewManager(){
+// }
+// // View employees by manager:
+// function viewManager(){
 
-}
-// Delete departments, roles, and employees:
-function deleteDepart(){
+// }
+// // Delete departments, roles, and employees:
+// function deleteDepart(){
 
-}
+// }
 
-function deleteRole(){
+// function deleteRole(){
 
-}
-function deleteEmployee(){
+// }
+// function deleteEmployee(){
 
-}
-// View the total utilized budget of a department( combined salaries of all employees in the department)
-function departmentBudget(){
+// }
+// // View the total utilized budget of a department( combined salaries of all employees in the department)
+// function departmentBudget(){
 
-}
+// }
 
 function quit() {
     connection.end();
+    process.exit();
   }
