@@ -1,6 +1,8 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
+const promisemyseql = require("promise-mysql");
+;
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -30,7 +32,7 @@ function runSearch(){
         message: "What would you like to do?",
         choices: [
             "View Employee",
-            "View Department",
+            "View Employee by Department",
             "View Role",
             "Add Department",
             "Add Role",
@@ -51,7 +53,7 @@ function runSearch(){
             case "View Employee":
                 viewEmployee();
                 break;
-            case "View Department":
+            case "View Employee by Department":
                 viewDepart();
                 break;
             case "View Role":
@@ -97,17 +99,12 @@ function runSearch(){
 }
 
 // View departments, roles, and employees:
-function viewEmployee(){
-   let query = "SELECT * FROM employee";
-   connection.query(query, function(err, res){
-       if (err) throw err;
-       console.table(res);
-       runSearch();
-   });
-   
+function viewEmployee() {
+    let query = "SELECT "
 }
+    
 
-function viewDept(){
+function viewDepart(){
     let query = "SELECT * FROM department";
     connection.query(query, function(err, res){
         if(err) throw err;
@@ -116,7 +113,6 @@ function viewDept(){
     });
     
 }
-
 
 function viewRole(){
     let query = "SELECT * FROM role";
@@ -153,8 +149,6 @@ function addEmployee() {
         }
       ])
       .then(function(answer) {
-  
-        
         connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [answer.eeFirstName, answer.eeLastName, answer.roleID, answer.managerID], function(err, res) {
           if (err) throw err;
           console.log(res);
@@ -163,25 +157,6 @@ function addEmployee() {
       });
   }
 
- function addDepart(){
-
- }
-
- function addRole(){
-
- }
-
-// View departments, roles, and employees:
-function viewDept(){
-
-}
-function viewRole(){
-
-}
-
-function viewEmployee(){
-
-}
 
 // Update employee roles:
 function updateEmployeeRole(){
@@ -211,3 +186,7 @@ function deleteEmployee(){
 function departmentBudget(){
 
 }
+
+function quit() {
+    connection.end();
+  }
