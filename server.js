@@ -93,71 +93,117 @@ function mainMenu(){
 
 // View departments, roles, and employees:
 function viewDepart() {
-    // select from the db
     let query = "SELECT * FROM department";
     connection.query(query, function(err, res) {
       if (err) throw err;
       console.table(res);
       mainMenu();
     });
-    // show the result to the user (console.table)
   }
   
   function viewRole() {
-    // select from the db
     let query = "SELECT * FROM role";
     connection.query(query, function(err, res) {
       if (err) throw err;
       console.table(res);
       mainMenu();
     });
-    // show the result to the user (console.table)
   }
-  
+  // Add ASC for ascending order
   function viewEmployees() {
-    // select from the db
     let query = "SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, concat(m.first_name, ' ' ,  m.last_name) AS manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY ID ASC";
     connection.query(query, function(err, res) {
       if (err) throw err;
       console.table(res);
       mainMenu();
     });
-    // show the result to the user (console.table)
   }
 
 // Add departments, roles, and employees:
 function addEmployee() {
+    connection.query('SELECT * FROM role', function(err, result) {
+        if (err) throw (err);
     inquirer
-      .prompt([
-        {
-          type: "input",
-          message: "What's the first name of the employee?",
-          name: "eeFirstName"
-        },
-        {
-          type: "input",
-          message: "What's the last name of the employee?",
-          name: "eeLastName"
-        },
-        {
-          type: "input",
-          message: "What is the employee's role id number?",
-          name: "roleID"
-        },
-        {
-          type: "input",
-          message: "What is the manager id number?",
-          name: "managerID"
-        }
-      ])
-      .then(function(answer) {
-        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [answer.eeFirstName, answer.eeLastName, answer.roleID, answer.managerID], function(err, res) {
-          if (err) throw err;
-          console.log(res);
-          mainMenu();
-        });
-      });
-  }
+        .prompt([{
+            name: "firstName",
+            type: "input",
+            message: "What is the employee's first name?",
+          }, 
+          {
+            name: "lastName",
+            type: "input",
+            message: "What is the employee's last name?",
+          },
+          {
+            name: "roleName",
+            type: "list",
+// is there a way to make the options here the results of a query that selects all departments?`
+            message: "What role does the employee have?",
+            choices: function() {
+             rolesArray = [];
+                result.forEach(result => {
+                    rolesArray.push(
+                        result.title
+                    );
+                })
+                return rolesArray;
+              }
+          }
+          ]) 
+// in order to get the id here, i need a way to grab it from the departments table 
+        .then(function(answer) {
+        // console.log(answer);
+        const role = answer.roleName;
+        connection.query('SELECT * FROM role', function(err, res) {
+            if (err) throw (err);
+            let filteredRole = res.filter(function(res) {
+                return res.title == role;
+            })
+        let roleId = filteredRole[0].id;
+        connection.query("SELECT * FROM employee", function(err, res) {
+                inquirer
+                .prompt ([
+                    {
+                        name: "manager",
+                        type: "list",
+                        message: "Who is your manager?",
+                        choices: function() {
+                            managersArray = []
+                            res.forEach(res => {
+                                managersArray.push(
+                                    res.last_name)
+                                
+                            })
+                            return managersArray;
+                        }
+                    }
+                ]).then(function(managerAnswer) {
+                    const manager = managerAnswer.manager;
+                connection.query('SELECT * FROM employee', function(err, res) {
+                if (err) throw (err);
+                let filteredManager = res.filter(function(res) {
+                return res.last_name == manager;
+            })
+            let managerId = filteredManager[0].id;
+                    // console.log(managerAnswer);
+                    let query = "INSERT INTO employee (first_name, last_name, role.id, manager.id) VALUES (?, ?, ?, ?)";
+                    let values = [answer.firstName, answer.lastName, roleId, managerId]
+                    console.table(values);
+                     connection.query(query, values,
+                         function(err, res, fields) {
+                        
+                        })
+                        mainMenu();
+                        })
+                     })
+                })
+            })
+        })
+})
+}
+function addDept(){
+
+}
 
 
 // // Update employee roles:
