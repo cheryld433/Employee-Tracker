@@ -124,7 +124,8 @@ function addEmployee() {
     connection.query('SELECT * FROM role', function(err, result) {
         if (err) throw (err);
     inquirer
-        .prompt([{
+        .prompt([
+          { 
             name: "firstName",
             type: "input",
             message: "What is the employee's first name?",
@@ -137,7 +138,6 @@ function addEmployee() {
           {
             name: "roleName",
             type: "list",
-// is there a way to make the options here the results of a query that selects all departments?`
             message: "What role does the employee have?",
             choices: function() {
              rolesArray = [];
@@ -149,10 +149,8 @@ function addEmployee() {
                 return rolesArray;
               }
           }
-          ]) 
-// in order to get the id here, i need a way to grab it from the departments table 
+        ])
         .then(function(answer) {
-        // console.log(answer);
         const role = answer.roleName;
         connection.query('SELECT * FROM role', function(err, res) {
             if (err) throw (err);
@@ -172,26 +170,24 @@ function addEmployee() {
                             res.forEach(res => {
                                 managersArray.push(
                                     res.last_name)
-                                
                             })
                             return managersArray;
                         }
                     }
-                ]).then(function(managerAnswer) {
+                ])
+                .then(function(managerAnswer) {
                     const manager = managerAnswer.manager;
                 connection.query('SELECT * FROM employee', function(err, res) {
                 if (err) throw (err);
                 let filteredManager = res.filter(function(res) {
                 return res.last_name == manager;
-            })
-            let managerId = filteredManager[0].id;
-                    // console.log(managerAnswer);
+                })
+                    let managerId = filteredManager[0].id;
                     let query = "INSERT INTO employee (first_name, last_name, role.id, manager.id) VALUES (?, ?, ?, ?)";
                     let values = [answer.firstName, answer.lastName, roleId, managerId]
                     console.table(values);
                      connection.query(query, values,
                          function(err, res, fields) {
-                        
                         })
                         mainMenu();
                         })
@@ -199,17 +195,24 @@ function addEmployee() {
                 })
             })
         })
-})
+    })
 }
 function addDept(){
 
 }
 
+function addRole(){
+
+}
+
 
 // // Update employee roles:
-// function updateEmployeeRole(){
+function updateEmployeeRole(){
 
-// }
+}
+
+
+
 // // BONUS....
 // // Update  Employee managers:
 // function updateEMployeeManager(){
