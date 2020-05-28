@@ -214,6 +214,27 @@ function addDept() {
 }
 
 function addRole(){
+    inquirer
+    .prompt([
+        {
+            name: "name",
+            type: "input",
+            message: "What is the name of the role?"
+        },
+        {
+            name: "salary",
+            type: "input",
+            message: "What is the salary of the role?"
+        },
+        {
+            name: "department",
+            type: "list",
+            message: "What departmet does the role belong to?",
+            choices: [
+                
+            ]
+        }
+    ])
 
 }
 
