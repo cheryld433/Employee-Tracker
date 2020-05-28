@@ -263,7 +263,22 @@ function addRole() {
 }
 // // Update employee roles:
 function updateEmployeeRole(){
-    
+    connection.query("SELECT * FROM employee", function(err, res){
+        if(err) throw err;
+        inquirer
+        .prompt({
+            name: "emplyeeRole",
+            type: "list",
+            message: " Which employee's role do you want to update?",
+            choices: function(){
+                employeeArray = [];
+                res.forEach(res => {
+                    employeeArray.push(res.last_name);
+                })
+                return employeeArray;
+            }
+        })
+    })
 }
 
 
