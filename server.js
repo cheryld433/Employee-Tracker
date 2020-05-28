@@ -197,8 +197,20 @@ function addEmployee() {
         })
     })
 }
-function addDept(){
-
+function addDept() {
+    inquirer
+        .prompt({
+            name: "department",
+            type: "input",
+            message: "What is the name of the new department?",
+          })
+        .then(function(answer) {
+        var query = "INSERT INTO department (name) VALUES ( ? )";
+        connection.query(query, answer.department, function(err, res) {
+            console.log(`You have added: ${(answer.department)}.`)
+        })
+        mainMenu();
+        })
 }
 
 function addRole(){
