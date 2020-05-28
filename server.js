@@ -154,6 +154,7 @@ function addEmployee() {
         const role = answer.roleName;
         connection.query('SELECT * FROM role', function(err, res) {
             if (err) throw (err);
+            // Filter to create a new array
             let filteredRole = res.filter(function(res) {
                 return res.title == role;
             })
@@ -213,36 +214,58 @@ function addDept() {
         })
 }
 
-function addRole(){
+function addRole() {
+    connection.query('SELECT * FROM department', function(err, res) {
+        if (err) throw (err);
     inquirer
-    .prompt([
-        {
-            name: "name",
+        .prompt([{
+            name: "title",
             type: "input",
-            message: "What is the name of the role?"
-        },
-        {
+            message: "What is the title of the new role?",
+          }, 
+          {
             name: "salary",
             type: "input",
-            message: "What is the salary of the role?"
-        },
-        {
-            name: "department",
+            message: "What is the salary of the new role?",
+          },
+          {
+            name: "departmentName",
             type: "list",
-            message: "What departmet does the role belong to?",
-            choices: [
-                
-            ]
-        }
-    ])
+            message: "Which department does this role fall under?",
+            choices: function() {
+                let deptNameArray = [];
+                res.forEach(res =>{
+                    deptNameArray.push(res.name);
+                })
+                return deptNameArray;
+            }
+          }
+        ])
+        .then(function(answer){
+            const department = answer.departmentName;
+            connection.query("SELECT * FROM department", function(err, res){
+                if (err) throw err;
+                // Filter to create a new array
+                let filterDepartment = res.filter(function(res){
+                    return res.name == department;
+                })
+                let id = filterDepartment[0].id;
+                let query= "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
+                let values = [answer.title, parseInt(answer.salary), id];
+                connection.query(query,values, function(err, res, fields){
+                    console.log(`You added: ${(values[0])}.`);
+                })
+            })
+            mainMenu();
+        })
+    })
 
 }
-
-
 // // Update employee roles:
 function updateEmployeeRole(){
-
+    
 }
+
 
 
 
@@ -274,4 +297,4 @@ function updateEmployeeRole(){
 function quit() {
     connection.end();
     process.exit();
-  }
+}
