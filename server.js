@@ -295,8 +295,26 @@ function updateEmployeeRole(){
                         return rolesArray;
                     }
                 })
+                .then(function(rolesAnswer){
+                    const role = rolesAnswer.role;
+                    console.log(rolesAnswer.role);
+                    connection.query("SELECT * FROM role WHERE title = ?", [role], function(err, res){
+                        if(err) throw err;
+                        let roleId = [0].id;
+                        let query = "UPDATE employee SET role_id ? WHERE last_name";
+                        let values = [roleId, name];
+                        console.log(values);
+
+                        connection.query(query,values, function(err, res, feilds){
+                            console.log("Updated employee roles.")
+                        })
+                        mainMenu();
+                    })
+                    
+                })
             })
         })
+       
     })
     
 
