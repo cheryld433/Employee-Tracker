@@ -278,8 +278,27 @@ function updateEmployeeRole(){
                 return employeeArray;
             }
         })
+        .then(function(answer){
+            console.log(answer);
+            const name = answer.employeeName
+            connection.query("SELECT * FROM role", function(err, res){
+                inquirer
+                .prompt({
+                    name: "assignRole",
+                    type: "list",
+                    message: "Which role do you want to assign the selected employee?",
+                    choices: function(){
+                        rolesArray = [];
+                        res.forEach(res => {
+                            rolesArray.push(res.title)
+                        })
+                        return rolesArray;
+                    }
+                })
+            })
+        })
     })
-}
+    
 
 
 
