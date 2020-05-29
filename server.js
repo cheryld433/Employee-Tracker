@@ -24,18 +24,12 @@ function mainMenu(){
         message: "What would you like to do?",
         choices: [
             "View all Employees",
-            "View all Employees by Department",
-            "View all Employees by Role",
+            "View all Departments",
+            "View all Roles",
             "Add Department",
             "Add Role",
             "Add Employee",
             "Update Employee Role",
-            "Update Employee Manager",
-            "View Employee by Manager",
-            "Delete Employee",
-            "Delete Department",
-            "Delete Role",
-            "View Department Budget",
             "Exit"
         ]
     })
@@ -45,10 +39,10 @@ function mainMenu(){
             case "View all Employees":
                 viewEmployees();
                 break;
-            case "View all Employees by Department":
+            case "View all Departments":
                 viewDepart();
                 break;
-            case "View all Employees by Role":
+            case "View all Roles":
                 viewRole();
                 break;
             case "Add Department":
@@ -63,35 +57,18 @@ function mainMenu(){
             case "Update Employee Role":
                 updateEmployeeRole();
                 break;
-            case "Update Employee Manager":
-                updateEMployeeManager();
-                break;
-            case "View Employee by Manager":
-                viewManager();
-                break;
-            case "Delete Department":
-                deleteDepart();
-                break;
-            case "Delete Role":
-                deleteRole();
-                break;
-            case "Delete Employee":
-                deleteEmployee();
-                break;
-            case "View Department Budget":
-                departmentBudget();
-                break;
             case "Exit":
                 connection.end();
                 break;
                 default:
-                    quit();
+                    Exit();
         }
     });
 
 }
 
 // View departments, roles, and employees:
+
 function viewDepart() {
     let query = "SELECT * FROM department";
     connection.query(query, function(err, res) {
@@ -308,45 +285,14 @@ function updateEmployeeRole(){
                         connection.query(query,values, function(err, res, feilds){
                             console.log("Updated employee roles.")
                         })
-                        mainMenu();
                     })
-                    
+                    mainMenu();
                 })
             })
-        })
-       
+        }) 
     })
-    
+}
 
-
-
-
-// // BONUS....
-// // Update  Employee managers:
-// function updateEMployeeManager(){
-
-// }
-// // View employees by manager:
-// function viewManager(){
-
-// }
-// // Delete departments, roles, and employees:
-// function deleteDepart(){
-
-// }
-
-// function deleteRole(){
-
-// }
-// function deleteEmployee(){
-
-// }
-// // View the total utilized budget of a department( combined salaries of all employees in the department)
-// function departmentBudget(){
-
-// }
-
-function quit() {
+function Exit() {
     connection.end();
-    process.exit();
 }
