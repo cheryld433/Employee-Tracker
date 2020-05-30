@@ -9,10 +9,7 @@ CREATE TABLE employee (
     last_name VARCHAR(30) NULL,
     role_id INTEGER (10) NULL,
     manager_id INTEGER (10) NULL,
-    PRIMARY KEY(id),
-    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
-    FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE
-
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE department (
@@ -25,9 +22,8 @@ CREATE TABLE role (
     id INTEGER NOT NULL AUTO_INCREMENT,
     title VARCHAR(30) NULL,
     salary DECIMAL (10,4) NULL,
-    department_id INTEGER (10) NULL
-    PRIMARY KEY (id),
-    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
+    department_id INTEGER (10) NULL,
+    PRIMARY KEY (id)
 );
 
 SELECT * FROM employee;

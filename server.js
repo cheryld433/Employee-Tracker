@@ -67,8 +67,6 @@ function mainMenu(){
 
 }
 
-// View departments, roles, and employees:
-
 function viewDepart() {
     let query = "SELECT * FROM department";
     connection.query(query, function(err, res) {
@@ -86,7 +84,7 @@ function viewDepart() {
       mainMenu();
     });
   }
-  // Add ASC for ascending order
+
   function viewEmployees() {
     let query = "SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, concat(m.first_name, ' ' ,  m.last_name) AS manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY ID ASC";
     connection.query(query, function(err, res) {
@@ -96,85 +94,58 @@ function viewDepart() {
     });
   }
 
-// Add departments, roles, and employees:
 function addEmployee() {
-    connection.query('SELECT * FROM role', function(err, result) {
-        if (err) throw (err);
-    inquirer
-        .prompt([
-          { 
-            name: "firstName",
-            type: "input",
-            message: "What is the employee's first name?",
-          }, 
-          {
-            name: "lastName",
-            type: "input",
-            message: "What is the employee's last name?",
-          },
-          {
-            name: "roleName",
-            type: "list",
-            message: "What role does the employee have?",
-            choices: function() {
-             rolesArray = [];
-                result.forEach(result => {
-                    rolesArray.push(
-                        result.title
-                    );
-                })
-                return rolesArray;
-              }
-          }
-        ])
-        .then(function(answer) {
-        const role = answer.roleName;
-        connection.query('SELECT * FROM role', function(err, res) {
-            if (err) throw (err);
-            // Filter to create a new array
-            let filteredRole = res.filter(function(res) {
-                return res.title == role;
-            })
-        let roleId = filteredRole[0].id;
-        connection.query("SELECT * FROM employee", function(err, res) {
-                inquirer
-                .prompt ([
-                    {
-                        name: "manager",
-                        type: "list",
-                        message: "Who is your manager?",
-                        choices: function() {
-                            managersArray = []
-                            res.forEach(res => {
-                                managersArray.push(
-                                    res.last_name)
-                            })
-                            return managersArray;
-                        }
+
+    connection.query("SELECT * FROM role", function (err, results) {
+        if (err) throw err;
+
+        inquirer.prompt([
+
+            {
+                type: "input",
+                name: "firstname",
+                message: "What is the employee's first name?"
+            },
+            {
+                type: "input",
+                name: "lastname",
+                message: "What is the employee's last name?"
+            },
+            {
+                name: "choice",
+                type: "list",
+                choices: function () {
+                    let choiceArray = [];
+                    for (let i = 0; i < results.length; i++) {
+                        choiceArray.push(results[i].title);
                     }
-                ])
-                .then(function(managerAnswer) {
-                    const manager = managerAnswer.manager;
-                connection.query('SELECT * FROM employee', function(err, res) {
-                if (err) throw (err);
-                let filteredManager = res.filter(function(res) {
-                return res.last_name == manager;
-                })
-                    let managerId = filteredManager[0].id;
-                    let query = "INSERT INTO employee (first_name, last_name, role.id, manager.id) VALUES (?, ?, ?, ?)";
-                    let values = [answer.firstName, answer.lastName, roleId, managerId]
-                    console.table(values);
-                     connection.query(query, values,
-                         function(err, res, fields) {
-                        })
-                        mainMenu();
-                        })
-                     })
-                })
-            })
+
+                    return choiceArray;
+                },
+                message: "What is the employee's role?"
+            }
+
+        ]).then(function (res) {
+            for (let i = 0; i < results.length; i++) {
+                if (results[i].title === res.choice) {
+                    res.role_id = results[i].id;
+                }
+            }
+            let query = "INSERT INTO employee SET ?"
+            const VALUES = {
+                first_name: res.firstname,
+                last_name: res.lastname,
+                role_id: res.role_id
+            }
+            connection.query(query, VALUES, function (err) {
+                if (err) throw err;
+                console.log("Employee successfully added!");
+            });
+            mainMenu();
         })
     })
 }
+
 function addDept() {
     inquirer
         .prompt({
@@ -183,7 +154,7 @@ function addDept() {
             message: "What is the name of the new department?",
           })
         .then(function(answer) {
-        var query = "INSERT INTO department (name) VALUES ( ? )";
+        let query = "INSERT INTO department (name) VALUES ( ? )";
         connection.query(query, answer.department, function(err, res) {
             console.log(`You have added: ${(answer.department)}.`)
         })
@@ -211,7 +182,7 @@ function addRole() {
             message: "Which department does this role fall under?",
             choices: function() {
                 let deptNameArray = [];
-                res.forEach(res =>{
+                res.forEach(res => {
                     deptNameArray.push(res.name);
                 })
                 return deptNameArray;
@@ -222,7 +193,6 @@ function addRole() {
             const department = answer.departmentName;
             connection.query("SELECT * FROM department", function(err, res){
                 if (err) throw err;
-                // Filter to create a new array
                 let filterDepartment = res.filter(function(res){
                     return res.name == department;
                 })
@@ -238,63 +208,71 @@ function addRole() {
     })
 
 }
-// // Update employee roles:
-function updateEmployeeRole(){
-    connection.query("SELECT * FROM employee", function(err, res){
-        if(err) throw err;
-        inquirer
-        .prompt({
-            name: "emplyeeRole",
-            type: "list",
-            message: " Which employee's role do you want to update?",
-            choices: function(){
-                employeeArray = [];
-                res.forEach(res => {
-                    employeeArray.push(res.last_name);
-                })
-                return employeeArray;
-            }
-        })
-        .then(function(answer){
-            console.log(answer);
-            const name = answer.employeeName
-            connection.query("SELECT * FROM role", function(err, res){
-                inquirer
-                .prompt({
-                    name: "assignRole",
-                    type: "list",
-                    message: "Which role do you want to assign the selected employee?",
-                    choices: function(){
-                        rolesArray = [];
-                        res.forEach(res => {
-                            rolesArray.push(res.title)
-                        })
-                        return rolesArray;
-                    }
-                })
-                .then(function(rolesAnswer){
-                    const role = rolesAnswer.role;
-                    console.log(rolesAnswer.role);
-                    connection.query("SELECT * FROM role WHERE title = ?", [role], function(err, res){
-                        if(err) throw err;
-                        let roleId = [0].id;
-                        let query = "UPDATE employee SET role_id ? WHERE last_name";
-                        let values = [roleId, name];
-                        console.log(values);
+function updateEmployeeRole() {
+    let roleQuery = "SELECT * FROM role;";
+    let departmentQuery = "SELECT * FROM department;";
 
-                        connection.query(query,values, function(err, res, feilds){
-                            console.log("Updated employee roles.")
-                        })
-                    })
+    connection.query(roleQuery, function (err, res) {
+        connection.query(departmentQuery, function (err, departments) {
+
+            if (err) throw err;
+            inquirer.prompt([
+
+                {
+                    name: "newRole",
+                    type: "list",
+                    choices: function () {
+                        let arrayOfChoices = [];
+                        for (let i = 0; i < res.length; i++) {
+                            arrayOfChoices.push(res[i].title);
+                        }
+
+                        return arrayOfChoices;
+                    },
+                    message: "Which Role would you like to update?"
+                },
+                {
+                    name: "newSalary",
+                    type: "input",
+                    message: "What is the new salary for this role?"
+
+                },
+                {
+                    name: "choice",
+                    type: "list",
+                    choices: function () {
+                        let arrayOfChoices = [];
+                        for (var i = 0; i < departments.length; i++) {
+                            arrayOfChoices.push(departments[i].name);
+                        }
+                        return arrayOfChoices;
+                    },
+                    message: "Which department this role belongs to?"
+                },
+            ]).then(function (result) {
+
+                for (let i = 0; i < departments.length; i++) {
+                    if (departments[i].name === result.choice) {
+                        result.department_id = departments[i].id;
+                    }
+                }
+                let query = "UPDATE role SET title=?,salary= ? WHERE department_id= ?"
+                const VALUES = [
+
+                    { title: result.newRole },
+                    { salary: result.newSalary },
+                    { department_id: result.department_id }
+                ]
+                let query1 = connection.query(query, VALUES, function (err) {
+                    if (err) throw err;
+                    console.table("Role Successfuly Updated!");
                     mainMenu();
-                })
+                });
+
             })
-        }) 
+        })
     })
 }
-
-
-
 function Exit() {
     connection.end();
 }
